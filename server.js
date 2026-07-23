@@ -11,7 +11,7 @@ res.statusCode = 200;
 res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
 try {
-// 3. ขอเชื่อมต่อและสงคําสั่ง SQL ไปดึงขอมูลจากตาราง students
+// 3. ขอเชื่อมต่อและส่งคําสั่ง SQL ไปดึงข้อมูลจากตาราง students
 const client = await pool.connect();
 const result = await client.query('SELECT * FROM students');
 client.release(); // คนืการเชื่อมต่อเมื่อใช้งานเสร็จ
@@ -26,7 +26,7 @@ html += `<tr><td>${row.student_id}</td><td>${row.student_name}</td></tr>`;
 html += `</table>`;
 res.end(html);
 } catch (err) {
-// กรณเีชื่อมต่อไม่ได้หรือเขียนชื่อตารางผิด
+// กรณีเชื่อมต่อไม่ได้หรือเขียนชื่อตารางผิด
 console.error(err);
 res.end(`<h1>เกิดขอผิดพลาด!</h1><p>${err.message}</p>`);
 }
