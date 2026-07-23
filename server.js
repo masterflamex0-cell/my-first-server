@@ -17,277 +17,261 @@ const server = http.createServer((req, res) => {
 
 <title>Node.js Server</title>
 
+<!-- Import Google Fonts: Plus Jakarta Sans & Sarabun -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-body{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    background:
-    radial-gradient(circle at top left,#2563eb,#111827 40%,#020617);
-    overflow:hidden;
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #030712;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.18) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
+    overflow-x: hidden;
+    color: #f8fafc;
 }
 
-/* วงกลมพื้นหลัง */
-
+/* วงกลมแสง Background Glows */
 body::before,
-body::after{
-    content:"";
-    position:absolute;
-    border-radius:50%;
-    filter:blur(100px);
-    z-index:-1;
+body::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: -1;
+    pointer-events: none;
 }
 
-body::before{
-    width:300px;
-    height:300px;
-    background:#3b82f6;
-    top:-80px;
-    left:-80px;
+body::before {
+    width: 380px;
+    height: 380px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    top: -100px;
+    left: -100px;
+    opacity: 0.6;
 }
 
-body::after{
-    width:350px;
-    height:350px;
-    background:#06b6d4;
-    bottom:-120px;
-    right:-120px;
+body::after {
+    width: 420px;
+    height: 420px;
+    background: linear-gradient(135deg, #0284c7, #06b6d4);
+    bottom: -140px;
+    right: -140px;
+    opacity: 0.5;
 }
 
-.card{
-
-    width:90%;
-    max-width:760px;
-
-    background:rgba(255,255,255,.08);
-    backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,.15);
-
-    border-radius:25px;
-
-    padding:50px;
-
-    color:white;
-
-    text-align:center;
-
-    box-shadow:
-    0 15px 40px rgba(0,0,0,.45);
-
-    animation:fade 1s ease;
-
+.card {
+    width: 90%;
+    max-width: 720px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 32px;
+    padding: 48px 40px;
+    text-align: center;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
 }
 
-@keyframes fade{
-
-from{
-opacity:0;
-transform:translateY(30px);
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
-to{
-opacity:1;
-transform:translateY(0);
+.logo-wrapper {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 20px auto;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+h1 {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.logo{
-
-font-size:70px;
-margin-bottom:15px;
-
+.subtitle {
+    font-size: 16px;
+    color: #94a3b8;
+    margin-bottom: 32px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
 }
 
-h1{
-
-font-size:42px;
-
-margin-bottom:10px;
-
-background:linear-gradient(90deg,#38bdf8,#60a5fa,#818cf8);
-
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-
+.info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
 }
 
-.subtitle{
-
-font-size:20px;
-
-color:#cbd5e1;
-
-margin-bottom:35px;
-
+.box {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    text-align: left;
 }
 
-.info{
-
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:20px;
-
-margin-top:20px;
-
+.box:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(56, 189, 248, 0.3);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.3);
 }
 
-.box{
-
-background:rgba(255,255,255,.07);
-
-padding:22px;
-
-border-radius:15px;
-
-transition:.3s;
-
-border:1px solid rgba(255,255,255,.08);
-
+.box h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 6px;
+    font-weight: 600;
 }
 
-.box:hover{
-
-transform:translateY(-8px);
-
-background:rgba(255,255,255,.12);
-
+.box p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #f1f5f9;
 }
 
-.box h3{
-
-font-size:15px;
-
-color:#94a3b8;
-
-margin-bottom:8px;
-
+.status-wrapper {
+    margin: 10px 0 32px 0;
 }
 
-.box p{
-
-font-size:20px;
-
-font-weight:bold;
-
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #4ade80;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
 }
 
-.status{
-
-margin:35px auto;
-
-display:inline-flex;
-
-align-items:center;
-
-gap:10px;
-
-padding:14px 30px;
-
-background:#16a34a;
-
-border-radius:50px;
-
-font-weight:bold;
-
-font-size:18px;
-
-box-shadow:0 0 20px rgba(34,197,94,.5);
-
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    position: relative;
 }
 
-.dot{
-
-width:12px;
-
-height:12px;
-
-background:#fff;
-
-border-radius:50%;
-
-animation:pulse 1.2s infinite;
-
+.dot::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: ping 1.8s infinite cubic-bezier(0, 0, 0.2, 1);
 }
 
-@keyframes pulse{
-
-0%{transform:scale(1);}
-50%{transform:scale(1.6);}
-100%{transform:scale(1);}
-
+@keyframes ping {
+    75%, 100% {
+        transform: scale(2.4);
+        opacity: 0;
+    }
 }
 
-.tech{
-
-margin-top:35px;
-
-display:flex;
-
-justify-content:center;
-
-flex-wrap:wrap;
-
-gap:15px;
-
+.tech {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 32px;
 }
 
-.tag{
-
-padding:10px 18px;
-
-border-radius:30px;
-
-background:rgba(255,255,255,.08);
-
-border:1px solid rgba(255,255,255,.12);
-
-font-size:15px;
-
+.tag {
+    padding: 8px 16px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 13px;
+    font-weight: 500;
+    color: #cbd5e1;
+    transition: all 0.2s ease;
 }
 
-footer{
-
-margin-top:40px;
-
-color:#94a3b8;
-
-font-size:14px;
-
+.tag:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
-@media(max-width:650px){
-
-.info{
-
-grid-template-columns:1fr;
-
+footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 24px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
 }
 
-.card{
-
-padding:35px 25px;
-
+footer span {
+    color: #f43f5e;
 }
 
-h1{
+@media(max-width: 640px) {
+    .card {
+        padding: 32px 20px;
+    }
 
-font-size:33px;
+    .info {
+        grid-template-columns: 1fr;
+    }
 
-}
-
+    h1 {
+        font-size: 30px;
+    }
+    
+    .logo-wrapper {
+        width: 70px;
+        height: 70px;
+        font-size: 36px;
+    }
 }
 
 </style>
@@ -298,7 +282,7 @@ font-size:33px;
 
 <div class="card">
 
-<div class="logo">🚀</div>
+<div class="logo-wrapper">🚀</div>
 
 <h1>Node.js Web Server</h1>
 
@@ -326,12 +310,11 @@ Professional Web Application
 
 </div>
 
-<div class="status">
-
-<div class="dot"></div>
-
-Server Running Successfully
-
+<div class="status-wrapper">
+    <div class="status">
+        <div class="dot"></div>
+        Server Running Successfully
+    </div>
 </div>
 
 <div class="tech">
@@ -348,7 +331,7 @@ Server Running Successfully
 
 <footer>
 
-Made with ❤️ using Node.js<br>
+Made with <span>❤️</span> using Node.js<br>
 Information Technology
 
 </footer>
