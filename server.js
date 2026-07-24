@@ -27,9 +27,9 @@ const server = http.createServer(async (req, res) => {
     result.rows.forEach(row => {
       tableRowsHtml += `
         <tr>
-          <td><span class="badge-id">👨‍🎓 ${row.student_id}</span></td>
+          <td><span class="badge-id">${row.student_id}</span></td>
           <td class="student-name">${row.student_name}</td>
-          <td><span class="badge-status">🟢 Active</span></td>
+          <td><span class="badge-status">Active</span></td>
         </tr>
       `;
     });
@@ -40,29 +40,28 @@ const server = http.createServer(async (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ฐานข้อมูลนักศึกษา | Space Alien Party Edition</title>
+<title>Student Information System | Deep Space Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg-dark: #0d0b26;
-  --neon-pink: #ff2a85;
-  --neon-cyan: #00f2fe;
-  --neon-lime: #00ff87;
-  --neon-yellow: #ffdd00;
-  --neon-purple: #9d4edd;
-  --text-main: #ffffff;
-  --text-muted: #c7d2fe;
+  --bg-dark: #050814;
+  --card-bg: rgba(12, 20, 41, 0.65);
+  --card-border: rgba(56, 189, 248, 0.25);
+  --cyan-glow: #38bdf8;
+  --accent-purple: #818cf8;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --success: #34d399;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Kanit', 'Fredoka', sans-serif;
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'><text y='20' font-size='20'>🚀</text></svg>"), auto !important;
+  font-family: 'Prompt', 'Chakra Petch', sans-serif;
 }
 
 body {
@@ -75,7 +74,7 @@ body {
   position: relative;
 }
 
-/* Background Canvas สำหรับดาวเคลื่อนไหว */
+/* Background Canvas อวกาศ */
 #spaceCanvas {
   position: fixed;
   top: 0;
@@ -94,208 +93,129 @@ body {
   min-height: 100vh;
 }
 
-/* ---------- ตัวการ์ตูนดุ๊กดิ๊กบนหน้าจอ (Animated Characters) ---------- */
-.floating-char {
-  position: fixed;
-  z-index: 10;
-  user-select: none;
-  pointer-events: none;
-  filter: drop-shadow(0 0 15px rgba(255,255,255,0.4));
-}
-
-/* นักบินอวกาศลอยเคลิ้ม */
-.astronaut {
-  font-size: 4.5rem;
-  top: 15%;
-  right: 5%;
-  animation: floatZeroG 6s ease-in-out infinite alternate, rotateGently 12s ease-in-out infinite;
-}
-
-/* เอเลี่ยนกระโดดดุ๊กดิ๊ก */
-.alien-jumper {
-  font-size: 4rem;
-  bottom: 8%;
-  left: 4%;
-  animation: alienBounce 2s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
-}
-
-/* ยาน UFO บินร่อน */
-.ufo-flyer {
-  font-size: 3.5rem;
-  top: 10%;
-  left: 6%;
-  animation: ufoPatrol 8s linear infinite alternate;
-}
-
-/* เอเลี่ยนตาเดียวจิ๋วแอบข้างตาราง */
-.alien-peek {
-  font-size: 3.5rem;
-  bottom: 25%;
-  right: 3%;
-  animation: peekAnim 4s ease-in-out infinite alternate;
-}
-
-@keyframes floatZeroG {
-  0% { transform: translateY(0px) translateX(0px); }
-  50% { transform: translateY(-25px) translateX(15px); }
-  100% { transform: translateY(10px) translateX(-10px); }
-}
-
-@keyframes rotateGently {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(15deg); }
-  100% { transform: rotate(-10deg); }
-}
-
-@keyframes alienBounce {
-  0%, 100% { transform: translateY(0) scale(1, 1); }
-  50% { transform: translateY(-40px) scale(0.9, 1.1); }
-}
-
-@keyframes ufoPatrol {
-  0% { transform: translateX(0) translateY(0) rotate(-5deg); }
-  100% { transform: translateX(60px) translateY(20px) rotate(10deg); }
-}
-
-@keyframes peekAnim {
-  0% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.2) rotate(-15deg); }
-  100% { transform: scale(1) rotate(10deg); }
-}
-
 /* ---------- Header ---------- */
 header {
-  background: rgba(13, 11, 38, 0.75);
-  backdrop-filter: blur(16px);
-  border-bottom: 3px solid transparent;
-  border-image: linear-gradient(90deg, var(--neon-pink), var(--neon-lime), var(--neon-cyan)) 1;
-  padding: 30px 20px;
+  background: rgba(5, 8, 20, 0.7);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+  padding: 22px 0;
   text-align: center;
   position: relative;
-  box-shadow: 0 10px 40px rgba(255, 42, 133, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
-.title-badge {
+.title-tag {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, rgba(255, 42, 133, 0.2), rgba(0, 242, 254, 0.2));
-  border: 2px solid var(--neon-pink);
-  padding: 6px 20px;
-  border-radius: 30px;
-  font-size: 0.95rem;
-  color: var(--neon-yellow);
-  font-weight: 600;
-  margin-bottom: 12px;
-  box-shadow: 0 0 15px rgba(255, 42, 133, 0.4);
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--cyan-glow);
+  font-weight: 500;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-family: 'Chakra Petch', sans-serif;
+  text-transform: uppercase;
 }
 
 header h1 {
-  font-family: 'Fredoka', 'Kanit', sans-serif;
-  font-size: 2.8rem;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 2.1rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #fff 20%, var(--neon-yellow) 50%, var(--neon-lime) 80%);
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #ffffff 30%, #a5f3fc 70%, var(--cyan-glow) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(0, 255, 135, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
+  text-shadow: 0 0 30px rgba(56, 189, 248, 0.25);
 }
 
 header p {
   color: var(--text-muted);
-  font-size: 1.1rem;
-  margin-top: 8px;
+  font-size: 0.92rem;
+  margin-top: 4px;
+  font-weight: 300;
 }
 
 /* ---------- Container ---------- */
 .container {
-  width: 92%;
-  max-width: 1200px;
-  margin: 30px auto;
+  width: 90%;
+  max-width: 1080px;
+  margin: 25px auto;
   flex: 1;
 }
 
-/* ---------- Top Bar (Clock + Status) ---------- */
+/* ---------- Top Bar (Status & Clock) ---------- */
 .top-status-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(22, 19, 59, 0.8);
-  border: 2px solid var(--neon-cyan);
-  padding: 14px 28px;
-  border-radius: 20px;
-  margin-bottom: 25px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 12px 24px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 12px;
 }
 
 .status-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 1rem;
-  font-weight: 500;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
 }
 
 .pulse-dot {
-  width: 12px;
-  height: 12px;
-  background-color: var(--neon-lime);
+  width: 8px;
+  height: 8px;
+  background-color: var(--success);
   border-radius: 50%;
-  box-shadow: 0 0 15px var(--neon-lime);
-  animation: pulse 1.2s infinite;
+  box-shadow: 0 0 10px var(--success);
+  animation: pulse 1.8s infinite;
 }
 
 @keyframes pulse {
-  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(0, 255, 137, 0.8); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 12px rgba(0, 255, 137, 0); }
-  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(0, 255, 137, 0); }
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px var(--success); }
+  100% { transform: scale(0.95); opacity: 0.8; }
 }
 
 .clock-display {
-  font-family: 'Fredoka', monospace;
-  color: var(--neon-yellow);
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-family: 'Chakra Petch', monospace;
+  color: var(--cyan-glow);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 /* ---------- Dashboard Grid Cards ---------- */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 20px;
 }
 
 .card {
-  background: linear-gradient(135deg, rgba(30, 27, 75, 0.85), rgba(15, 23, 42, 0.85));
+  background: var(--card-bg);
   backdrop-filter: blur(16px);
-  border: 2px solid var(--neon-pink);
-  border-radius: 24px;
-  padding: 24px;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 30px rgba(255, 42, 133, 0.25);
-}
-
-.card:nth-child(2) {
-  border-color: var(--neon-lime);
-  box-shadow: 0 10px 30px rgba(0, 255, 137, 0.25);
-}
-
-.card:nth-child(3) {
-  border-color: var(--neon-yellow);
-  box-shadow: 0 10px 30px rgba(255, 221, 0, 0.25);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 18px 22px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 242, 254, 0.4);
+  border-color: var(--cyan-glow);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(56, 189, 248, 0.15);
 }
 
 .card-header {
@@ -306,21 +226,21 @@ header p {
 
 .card-title {
   color: var(--text-muted);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 400;
 }
 
 .card-icon {
-  font-size: 2.2rem;
+  font-size: 1.2rem;
+  opacity: 0.8;
 }
 
 .card-number {
-  margin-top: 15px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 3.2rem;
+  margin-top: 8px;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 2.2rem;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 0 15px var(--neon-pink);
+  color: var(--text-main);
 }
 
 /* ---------- Controls & Search ---------- */
@@ -328,75 +248,77 @@ header p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 25px;
+  gap: 15px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
 .search-wrapper {
   position: relative;
   flex: 1;
-  min-width: 300px;
+  min-width: 260px;
 }
 
 .search-input {
   width: 100%;
-  padding: 16px 20px 16px 52px;
-  background: rgba(22, 19, 59, 0.85);
-  border: 2px solid var(--neon-cyan);
-  border-radius: 20px;
-  color: #fff;
-  font-size: 1.05rem;
+  padding: 12px 16px 12px 44px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 0.92rem;
   outline: none;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   transition: all 0.3s ease;
-  box-shadow: 0 5px 20px rgba(0, 242, 254, 0.2);
+}
+
+.search-input::placeholder {
+  color: #64748b;
 }
 
 .search-input:focus {
-  border-color: var(--neon-lime);
-  box-shadow: 0 0 25px rgba(0, 255, 137, 0.5);
-  transform: scale(1.01);
+  border-color: var(--cyan-glow);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
 }
 
 .search-icon {
   position: absolute;
-  left: 18px;
+  left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.4rem;
+  font-size: 1.1rem;
+  color: var(--text-muted);
 }
 
 .btn-space {
-  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
-  color: #fff;
-  border: none;
-  padding: 16px 28px;
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 1.05rem;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.2));
+  border: 1px solid var(--cyan-glow);
+  color: var(--cyan-glow);
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 0 20px rgba(255, 42, 133, 0.5);
 }
 
 .btn-space:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 0 30px rgba(0, 252, 254, 0.8);
-  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-lime));
-  color: #000;
+  background: var(--cyan-glow);
+  color: #050814;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
 }
 
-/* ---------- Colorful Table Box ---------- */
+/* ---------- Table Box ---------- */
 .table-box {
-  background: rgba(22, 19, 59, 0.85);
+  background: var(--card-bg);
   backdrop-filter: blur(16px);
-  border: 2px solid var(--neon-purple);
-  border-radius: 24px;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(157, 78, 221, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 table {
@@ -406,89 +328,87 @@ table {
 }
 
 thead {
-  background: linear-gradient(90deg, rgba(255, 42, 133, 0.3), rgba(0, 242, 254, 0.3));
-  border-bottom: 2px solid var(--neon-cyan);
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid var(--card-border);
 }
 
 thead th {
-  padding: 20px 24px;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--neon-yellow);
-  letter-spacing: 1px;
+  padding: 16px 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cyan-glow);
+  letter-spacing: 0.5px;
+  font-family: 'Chakra Petch', sans-serif;
+  text-transform: uppercase;
 }
 
 tbody tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   transition: all 0.2s ease;
 }
 
 tbody tr:hover {
-  background: rgba(0, 242, 254, 0.15);
-  transform: scale(1.01);
-  box-shadow: inset 6px 0 0 var(--neon-pink);
+  background: rgba(56, 189, 248, 0.06);
 }
 
 tbody td {
-  padding: 18px 24px;
-  font-size: 1.05rem;
-  font-weight: 500;
+  padding: 15px 20px;
+  font-size: 0.92rem;
+  font-weight: 400;
 }
 
 .badge-id {
-  font-family: 'Fredoka', monospace;
-  background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(0, 255, 137, 0.2));
-  color: var(--neon-cyan);
-  padding: 6px 16px;
-  border-radius: 12px;
-  border: 1px solid var(--neon-cyan);
-  font-weight: 700;
+  font-family: 'Chakra Petch', monospace;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--cyan-glow);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  font-weight: 600;
+  font-size: 0.88rem;
 }
 
 .badge-status {
-  color: var(--neon-lime);
-  font-size: 0.9rem;
-  background: rgba(0, 255, 137, 0.15);
-  padding: 6px 14px;
+  color: var(--success);
+  font-size: 0.8rem;
+  background: rgba(52, 211, 153, 0.1);
+  padding: 4px 12px;
   border-radius: 20px;
-  border: 1px solid var(--neon-lime);
-  font-weight: 600;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
-/* Click Spawn Alien Effect */
-.click-alien {
-  position: fixed;
-  font-size: 2.5rem;
-  pointer-events: none;
-  z-index: 999;
-  animation: spawnFloat 1s ease-out forwards;
-}
-
-@keyframes spawnFloat {
-  0% { opacity: 1; transform: scale(0.5) translateY(0); }
-  100% { opacity: 0; transform: scale(1.5) translateY(-60px); }
+.badge-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background-color: var(--success);
+  border-radius: 50%;
 }
 
 /* ---------- Footer ---------- */
 footer {
   text-align: center;
-  padding: 30px;
+  padding: 22px;
   color: var(--text-muted);
-  font-size: 0.95rem;
-  border-top: 2px solid var(--neon-pink);
-  background: rgba(13, 11, 38, 0.95);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(5, 8, 20, 0.9);
   margin-top: auto;
 }
 
 footer strong {
-  color: var(--neon-yellow);
+  color: var(--cyan-glow);
+  font-weight: 500;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  header h1 { font-size: 2rem; }
-  .container { width: 95%; }
-  .astronaut, .alien-jumper, .alien-peek { font-size: 2.8rem; }
+  header h1 { font-size: 1.6rem; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .container { width: 94%; }
   .top-status-bar { flex-direction: column; align-items: flex-start; }
 }
 </style>
@@ -496,21 +416,15 @@ footer strong {
 
 <body>
 
-<!-- Background Canvas อวกาศเคลื่อนไหว -->
+<!-- Background Canvas สำหรับอวกาศแบบเรียบหรู -->
 <canvas id="spaceCanvas"></canvas>
-
-<!-- ตัวการ์ตูนเคลื่อนไหวลอยในหน้าจอ -->
-<div class="floating-char astronaut">👨‍🚀</div>
-<div class="floating-char alien-jumper">👾</div>
-<div class="floating-char ufo-flyer">🛸</div>
-<div class="floating-char alien-peek">👽</div>
 
 <div class="content-wrapper">
 
   <header>
-    <div class="title-badge">👾 ALIEN PARTY • STUDENT PORTAL 🛸</div>
-    <h1>🌌 ฐานข้อมูลนักศึกษา 👨‍🚀</h1>
-    <p>ระบบจัดการข้อมูลนักศึกษาฉบับอวกาศสดใส | Node.js • PostgreSQL • Railway</p>
+    <div class="title-tag">System Portal • Node.js Engine</div>
+    <h1>ระบบสารสนเทศข้อมูลนักศึกษา</h1>
+    <p>Enterprise Student Management System | Connected via PostgreSQL</p>
   </header>
 
   <div class="container">
@@ -519,13 +433,13 @@ footer strong {
     <div class="top-status-bar">
       <div class="status-item">
         <div class="pulse-dot"></div>
-        <span>สถานะเซิร์ฟเวอร์: <strong style="color:var(--neon-lime)">เชื่อมต่อฐานข้อมูลเรียบร้อย</strong></span>
+        <span>Database Status: <strong style="color:var(--success)">Connected (SSL Encrypted)</strong></span>
       </div>
       <div class="status-item">
-        <span>📡 Latency: <strong style="color:var(--neon-cyan)">18 ms</strong></span>
+        <span>Host Platform: <strong style="color:var(--cyan-glow)">Railway Cloud Server</strong></span>
       </div>
       <div class="status-item">
-        <span>🕒 เวลาอวกาศ: <span id="clock" class="clock-display">00:00:00</span></span>
+        <span>System Time: <span id="clock" class="clock-display">00:00:00</span></span>
       </div>
     </div>
 
@@ -534,36 +448,36 @@ footer strong {
       <div class="card">
         <div class="card-header">
           <span class="card-title">จำนวนนักศึกษาทั้งหมด</span>
-          <span class="card-icon">👨‍🎓</span>
+          <span class="card-icon">👥</span>
         </div>
-        <div class="card-number" style="color: var(--neon-pink);">${result.rows.length}</div>
+        <div class="card-number" style="color: var(--cyan-glow);">${result.rows.length}</div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <span class="card-title">สถานะฐานข้อมูล</span>
+          <span class="card-title">สถานะระบบ</span>
           <span class="card-icon">⚡</span>
         </div>
-        <div class="card-number" style="color: var(--neon-lime);">ONLINE</div>
+        <div class="card-number" style="color: var(--success); font-size: 1.8rem; line-height: 2.2rem;">ONLINE</div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <span class="card-title">โหนดประมวลผล</span>
-          <span class="card-icon">🪐</span>
+          <span class="card-title">การเชื่อมต่อโหนด</span>
+          <span class="card-icon">🌐</span>
         </div>
-        <div class="card-number" style="color: var(--neon-yellow);">RAILWAY</div>
+        <div class="card-number" style="color: var(--accent-purple); font-size: 1.8rem; line-height: 2.2rem;">SECURE</div>
       </div>
     </div>
 
     <!-- Search & Controls -->
     <div class="controls-box">
       <div class="search-wrapper">
-        <span class="search-icon">🔎</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="พิมพ์รหัสนักศึกษา หรือ ชื่อเพื่อค้นหา..." onkeyup="filterTable()">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาด้วยรหัสนักศึกษา หรือ ชื่อ-นามสกุล..." onkeyup="filterTable()">
       </div>
       <button class="btn-space" onclick="location.reload()">
-        <span>🎉</span> รีเฟรชข้อมูล
+        🔄 รีเฟรชข้อมูล
       </button>
     </div>
 
@@ -572,13 +486,13 @@ footer strong {
       <table id="studentTable">
         <thead>
           <tr>
-            <th>รหัสนักศึกษา 🆔</th>
-            <th>ชื่อ - นามสกุล นักศึกษา 👤</th>
-            <th>สถานะ 🟢</th>
+            <th>รหัสนักศึกษา</th>
+            <th>ชื่อ - นามสกุล นักศึกษา</th>
+            <th>สถานะการศึกษา</th>
           </tr>
         </thead>
         <tbody>
-          ${tableRowsHtml.length > 0 ? tableRowsHtml : `<tr><td colspan="3" style="text-align:center; color: var(--text-muted); padding:40px;">👾 ไม่พบข้อมูลนักศึกษาในระบบอวกาศ</td></tr>`}
+          ${tableRowsHtml.length > 0 ? tableRowsHtml : `<tr><td colspan="3" style="text-align:center; color: var(--text-muted); padding:30px;">ไม่พบข้อมูลนักศึกษาในระบบ</td></tr>`}
         </tbody>
       </table>
     </div>
@@ -586,24 +500,23 @@ footer strong {
   </div>
 
   <footer>
-    <p>🚀 <strong>Student Database (Alien Party Edition)</strong></p>
-    <p style="margin-top: 6px;">Powered by Node.js • PostgreSQL • Railway Platform</p>
-    <p style="margin-top: 8px; opacity: 0.7;">© 2026 All Rights Reserved | Interstellar Space Academy 🪐</p>
+    <p><strong>Student Information System</strong> — Deep Space Enterprise Edition</p>
+    <p style="margin-top: 4px; opacity: 0.7;">Powered by Node.js Engine • PostgreSQL Database • Deployed on Railway</p>
   </footer>
 
 </div>
 
 <script>
-// --- 1. นาฬิกาอวกาศ Realtime ---
+// --- 1. Realtime Clock ---
 function updateClock() {
   const now = new Date();
   const timeStr = now.toTimeString().split(' ')[0];
-  document.getElementById('clock').textContent = timeStr;
+  document.getElementById('clock').textContent = timeStr + ' UTC';
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-// --- 2. ค้นหาข้อมูลนักศึกษา (Client-side Search) ---
+// --- 2. Client-side Search ---
 function filterTable() {
   const input = document.getElementById('searchInput');
   const filter = input.value.toLowerCase();
@@ -627,22 +540,7 @@ function filterTable() {
   }
 }
 
-// --- 3. Click Spawn Alien Effect (คลิกตรงไหนมีเอเลี่ยนโผล่) ---
-const alienEmojis = ['👾', '👽', '🛸', '🌟', '🤖', '👾'];
-document.addEventListener('click', (e) => {
-  const spawn = document.createElement('div');
-  spawn.className = 'click-alien';
-  spawn.innerText = alienEmojis[Math.floor(Math.random() * alienEmojis.length)];
-  spawn.style.left = (e.clientX - 20) + 'px';
-  spawn.style.top = (e.clientY - 20) + 'px';
-  document.body.appendChild(spawn);
-
-  setTimeout(() => {
-    spawn.remove();
-  }, 1000);
-});
-
-// --- 4. ระบบสุริยะเเละดาวตกสีสดใสด้วย Canvas ---
+// --- 3. Realistic Solar System & Deep Space Canvas ---
 const canvas = document.getElementById('spaceCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -653,31 +551,34 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// สร้างดวงดาวหลากสี
+// สร้างดวงดาวแบบละเอียด
 const stars = [];
-const colors = ['#ff2a85', '#00f2fe', '#00ff87', '#ffdd00', '#ffffff'];
-
-for (let i = 0; i < 180; i++) {
+for (let i = 0; i < 250; i++) {
   stars.push({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
-    radius: Math.random() * 2,
-    color: colors[Math.floor(Math.random() * colors.length)],
+    radius: Math.random() * 1.5,
     alpha: Math.random(),
-    speed: Math.random() * 0.03
+    speed: Math.random() * 0.015 + 0.005
   });
 }
 
-// ระบบดาวตก (Shooting Stars)
+// สร้างดาวเคราะห์ระบบสุริยะ
+const planets = [
+  { x: canvas.width * 0.15, y: canvas.height * 0.25, radius: 24, color: '#38bdf8', ring: true, angle: 0, orbitSpeed: 0.0003 },
+  { x: canvas.width * 0.85, y: canvas.height * 0.75, radius: 35, color: '#818cf8', ring: false, angle: Math.PI, orbitSpeed: 0.0002 }
+];
+
+// สร้างดาวตก
 let shootingStars = [];
 function createShootingStar() {
-  if (Math.random() < 0.05) {
+  if (Math.random() < 0.02) {
     shootingStars.push({
       x: Math.random() * canvas.width,
-      y: 0,
-      length: Math.random() * 80 + 40,
-      speed: Math.random() * 10 + 6,
-      color: colors[Math.floor(Math.random() * colors.length)]
+      y: Math.random() * (canvas.height * 0.5),
+      length: Math.random() * 100 + 60,
+      speed: Math.random() * 8 + 4,
+      alpha: 1
     });
   }
 }
@@ -685,32 +586,74 @@ function createShootingStar() {
 function animateSpace() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // วาดดาวกะพริบ
+  // 1. วาดดาวระยิบระยับ
   stars.forEach(star => {
     star.alpha += star.speed;
-    if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
+    if (star.alpha > 1 || star.alpha < 0.2) star.speed = -star.speed;
     ctx.beginPath();
     ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-    ctx.fillStyle = star.color;
-    ctx.globalAlpha = Math.abs(star.alpha);
+    ctx.fillStyle = `rgba(226, 232, 240, ${Math.abs(star.alpha)})`;
     ctx.fill();
   });
-  ctx.globalAlpha = 1;
 
-  // วาดดาวตก
+  // 2. วาดดาวเคราะห์พร้อมแสงเงาสมจริง
+  planets.forEach(p => {
+    p.angle += p.orbitSpeed;
+    const currentX = p.x + Math.cos(p.angle) * 30;
+    const currentY = p.y + Math.sin(p.angle) * 15;
+
+    // รังสีเรืองแสงรอบดาว
+    const glowGradient = ctx.createRadialGradient(currentX, currentY, p.radius * 0.5, currentX, currentY, p.radius * 2.5);
+    glowGradient.addColorStop(0, p.color + '44');
+    glowGradient.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(currentX, currentY, p.radius * 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = glowGradient;
+    ctx.fill();
+
+    // ตัวดาวเคราะห์
+    const planetGradient = ctx.createRadialGradient(
+      currentX - p.radius * 0.3, currentY - p.radius * 0.3, p.radius * 0.1,
+      currentX, currentY, p.radius
+    );
+    planetGradient.addColorStop(0, '#ffffff');
+    planetGradient.addColorStop(0.5, p.color);
+    planetGradient.addColorStop(1, '#050814');
+
+    ctx.beginPath();
+    ctx.arc(currentX, currentY, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = planetGradient;
+    ctx.fill();
+
+    // วงแหวน (ถ้ามี)
+    if (p.ring) {
+      ctx.beginPath();
+      ctx.ellipse(currentX, currentY, p.radius * 2.2, p.radius * 0.6, Math.PI / 6, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+  });
+
+  // 3. วาดดาวตก
   createShootingStar();
   shootingStars.forEach((ss, index) => {
+    const gradient = ctx.createLinearGradient(ss.x, ss.y, ss.x - ss.length, ss.y + ss.length);
+    gradient.addColorStop(0, 'rgba(56, 189, 248, 0.8)');
+    gradient.addColorStop(1, 'transparent');
+
     ctx.beginPath();
     ctx.moveTo(ss.x, ss.y);
     ctx.lineTo(ss.x - ss.length, ss.y + ss.length);
-    ctx.strokeStyle = ss.color;
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
     ss.x += ss.speed;
     ss.y += ss.speed;
+    ss.alpha -= 0.01;
 
-    if (ss.y > canvas.height || ss.x > canvas.width) {
+    if (ss.y > canvas.height || ss.x > canvas.width || ss.alpha <= 0) {
       shootingStars.splice(index, 1);
     }
   });
@@ -735,8 +678,8 @@ animateSpace();
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>System Error | Alien Space</title>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Database Connection Error</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500&display=swap" rel="stylesheet">
 <style>
 body {
   margin: 0;
@@ -744,38 +687,36 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #0d0b26;
-  font-family: 'Kanit', sans-serif;
+  background: #050814;
+  font-family: 'Prompt', sans-serif;
   color: #fff;
 }
-.box {
-  background: rgba(255, 42, 133, 0.15);
-  border: 2px solid #ff2a85;
-  padding: 40px;
-  border-radius: 24px;
-  backdrop-filter: blur(10px);
-  text-align: center;
-  max-width: 600px;
-  box-shadow: 0 0 50px rgba(255, 42, 133, 0.4);
+.error-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 35px;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  max-width: 550px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
-h1 { color: #ff2a85; margin-bottom: 12px; font-size: 2rem; }
-p { color: #c7d2fe; margin-bottom: 20px; }
+h2 { color: #ef4444; margin-bottom: 10px; font-size: 1.4rem; }
+p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 15px; }
 pre {
-  background: #000;
-  color: #00ff87;
-  padding: 16px;
-  border-radius: 12px;
-  text-align: left;
+  background: #020617;
+  color: #f87171;
+  padding: 14px;
+  border-radius: 8px;
   overflow-x: auto;
-  font-size: 0.9rem;
-  border: 1px solid #00ff8766;
+  font-size: 0.85rem;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 </style>
 </head>
 <body>
-<div class="box">
-  <h1>💥 สัญญาณฐานข้อมูลขัดข้อง!</h1>
-  <p>เกิดข้อผิดพลาดในการเชื่อมต่อกับยานแม่ในห้วงอวกาศ</p>
+<div class="error-card">
+  <h2>⚠️ Database Connection Failure</h2>
+  <p>ไม่สามารถเชื่อมต่อกับฐานข้อมูล PostgreSQL ได้ในขณะนี้</p>
   <pre>${err.message}</pre>
 </div>
 </body>
@@ -785,5 +726,5 @@ pre {
 });
 
 server.listen(port, () => {
-  console.log(`🌌 Alien Party Database running on port: ${port}`);
+  console.log(`🌌 Professional Space Portal running on port: ${port}`);
 });
