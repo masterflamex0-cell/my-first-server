@@ -1,11 +1,12 @@
 const http = require("http");
 const { Pool } = require("pg");
 
+// ตรวจสอบ DATABASE_URL หากไม่ได้ตั้งค่าไว้ จะใช้ค่า Default สำหรับ Localhost
+const connectionString = process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/postgres";
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString: connectionString,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
 const port = process.env.PORT || 3000;
@@ -17,6 +18,8 @@ const server = http.createServer(async (req, res) => {
 
   try {
     const client = await pool.connect();
+    
+    // ดึงข้อมูลนักศึกษา
     const result = await client.query(
       "SELECT * FROM students ORDER BY student_id ASC"
     );
@@ -24,15 +27,17 @@ const server = http.createServer(async (req, res) => {
 
     // สร้าง HTML ส่วนตารางจากข้อมูลนักศึกษา
     let tableRowsHtml = "";
-    result.rows.forEach(row => {
-      tableRowsHtml += `
-        <tr>
-          <td><span class="badge-id">${row.student_id}</span></td>
-          <td class="student-name">${row.student_name}</td>
-          <td><span class="badge-status">Active</span></td>
-        </tr>
-      `;
-    });
+    if (result.rows && result.rows.length > 0) {
+      result.rows.forEach(row => {
+        tableRowsHtml += `
+          <tr>
+            <td><span class="badge-id">${row.student_id || '-'}</span></td>
+            <td class="student-name">${row.student_name || '-'}</td>
+            <td><span class="badge-status">Active</span></td>
+          </tr>
+        `;
+      });
+    }
 
     const html = `
 <!DOCTYPE html>
@@ -74,7 +79,6 @@ body {
   position: relative;
 }
 
-/* Background Canvas อวกาศ */
 #spaceCanvas {
   position: fixed;
   top: 0;
@@ -93,7 +97,6 @@ body {
   min-height: 100vh;
 }
 
-/* ---------- Header ---------- */
 header {
   background: rgba(5, 8, 20, 0.7);
   backdrop-filter: blur(12px);
@@ -139,7 +142,6 @@ header p {
   font-weight: 300;
 }
 
-/* ---------- Container ---------- */
 .container {
   width: 90%;
   max-width: 1080px;
@@ -147,7 +149,6 @@ header p {
   flex: 1;
 }
 
-/* ---------- Top Bar (Status & Clock) ---------- */
 .top-status-bar {
   display: flex;
   justify-content: space-between;
@@ -194,7 +195,6 @@ header p {
   letter-spacing: 1px;
 }
 
-/* ---------- Dashboard Grid Cards ---------- */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -243,7 +243,6 @@ header p {
   color: var(--text-main);
 }
 
-/* ---------- Controls & Search ---------- */
 .controls-box {
   display: flex;
   justify-content: space-between;
@@ -311,7 +310,6 @@ header p {
   box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
 }
 
-/* ---------- Table Box ---------- */
 .table-box {
   background: var(--card-bg);
   backdrop-filter: blur(16px);
@@ -388,7 +386,6 @@ tbody td {
   border-radius: 50%;
 }
 
-/* ---------- Footer ---------- */
 footer {
   text-align: center;
   padding: 22px;
@@ -404,7 +401,6 @@ footer strong {
   font-weight: 500;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   header h1 { font-size: 1.6rem; }
   .dashboard-grid { grid-template-columns: 1fr; }
@@ -416,7 +412,6 @@ footer strong {
 
 <body>
 
-<!-- Background Canvas สำหรับอวกาศแบบเรียบหรู -->
 <canvas id="spaceCanvas"></canvas>
 
 <div class="content-wrapper">
@@ -429,7 +424,6 @@ footer strong {
 
   <div class="container">
 
-    <!-- Top Status Bar -->
     <div class="top-status-bar">
       <div class="status-item">
         <div class="pulse-dot"></div>
@@ -443,14 +437,13 @@ footer strong {
       </div>
     </div>
 
-    <!-- Dashboard Cards -->
     <div class="dashboard-grid">
       <div class="card">
         <div class="card-header">
           <span class="card-title">จำนวนนักศึกษาทั้งหมด</span>
           <span class="card-icon">👥</span>
         </div>
-        <div class="card-number" style="color: var(--cyan-glow);">${result.rows.length}</div>
+        <div class="card-number" style="color: var(--cyan-glow);">${result.rows ? result.rows.length : 0}</div>
       </div>
 
       <div class="card">
@@ -470,7 +463,6 @@ footer strong {
       </div>
     </div>
 
-    <!-- Search & Controls -->
     <div class="controls-box">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
@@ -481,7 +473,6 @@ footer strong {
       </button>
     </div>
 
-    <!-- Table -->
     <div class="table-box">
       <table id="studentTable">
         <thead>
@@ -507,7 +498,6 @@ footer strong {
 </div>
 
 <script>
-// --- 1. Realtime Clock ---
 function updateClock() {
   const now = new Date();
   const timeStr = now.toTimeString().split(' ')[0];
@@ -516,7 +506,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// --- 2. Client-side Search ---
 function filterTable() {
   const input = document.getElementById('searchInput');
   const filter = input.value.toLowerCase();
@@ -540,7 +529,6 @@ function filterTable() {
   }
 }
 
-// --- 3. Realistic Solar System & Deep Space Canvas ---
 const canvas = document.getElementById('spaceCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -551,7 +539,6 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// สร้างดวงดาวแบบละเอียด
 const stars = [];
 for (let i = 0; i < 250; i++) {
   stars.push({
@@ -563,13 +550,11 @@ for (let i = 0; i < 250; i++) {
   });
 }
 
-// สร้างดาวเคราะห์ระบบสุริยะ
 const planets = [
   { x: canvas.width * 0.15, y: canvas.height * 0.25, radius: 24, color: '#38bdf8', ring: true, angle: 0, orbitSpeed: 0.0003 },
   { x: canvas.width * 0.85, y: canvas.height * 0.75, radius: 35, color: '#818cf8', ring: false, angle: Math.PI, orbitSpeed: 0.0002 }
 ];
 
-// สร้างดาวตก
 let shootingStars = [];
 function createShootingStar() {
   if (Math.random() < 0.02) {
@@ -586,7 +571,6 @@ function createShootingStar() {
 function animateSpace() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 1. วาดดาวระยิบระยับ
   stars.forEach(star => {
     star.alpha += star.speed;
     if (star.alpha > 1 || star.alpha < 0.2) star.speed = -star.speed;
@@ -596,13 +580,11 @@ function animateSpace() {
     ctx.fill();
   });
 
-  // 2. วาดดาวเคราะห์พร้อมแสงเงาสมจริง
   planets.forEach(p => {
     p.angle += p.orbitSpeed;
     const currentX = p.x + Math.cos(p.angle) * 30;
     const currentY = p.y + Math.sin(p.angle) * 15;
 
-    // รังสีเรืองแสงรอบดาว
     const glowGradient = ctx.createRadialGradient(currentX, currentY, p.radius * 0.5, currentX, currentY, p.radius * 2.5);
     glowGradient.addColorStop(0, p.color + '44');
     glowGradient.addColorStop(1, 'transparent');
@@ -611,7 +593,6 @@ function animateSpace() {
     ctx.fillStyle = glowGradient;
     ctx.fill();
 
-    // ตัวดาวเคราะห์
     const planetGradient = ctx.createRadialGradient(
       currentX - p.radius * 0.3, currentY - p.radius * 0.3, p.radius * 0.1,
       currentX, currentY, p.radius
@@ -625,7 +606,6 @@ function animateSpace() {
     ctx.fillStyle = planetGradient;
     ctx.fill();
 
-    // วงแหวน (ถ้ามี)
     if (p.ring) {
       ctx.beginPath();
       ctx.ellipse(currentX, currentY, p.radius * 2.2, p.radius * 0.6, Math.PI / 6, 0, Math.PI * 2);
@@ -635,7 +615,6 @@ function animateSpace() {
     }
   });
 
-  // 3. วาดดาวตก
   createShootingStar();
   shootingStars.forEach((ss, index) => {
     const gradient = ctx.createLinearGradient(ss.x, ss.y, ss.x - ss.length, ss.y + ss.length);
